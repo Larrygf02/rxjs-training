@@ -12,6 +12,9 @@ const intervalo$ = new Observable(subs => {
     setInterval(() => {
         subs.next(number)
         number += 1;
+        if (number == 10) {
+            subs.complete()
+        }
     }, 1000)
 })
 
