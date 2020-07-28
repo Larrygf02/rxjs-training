@@ -1,4 +1,4 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, Subscriber } from 'rxjs';
 
 const observer: Observer<any> = {
     next: value => console.log('[next]: ', value),
@@ -6,26 +6,13 @@ const observer: Observer<any> = {
     complete: () => console.info('[Completado]')
 }
 
-//const obs$ = Observable.create()
-// observable de tipo string
-const obs$ = new Observable<string>(subs => {
-    subs.next('Hola');
-    subs.next('Mundo');
+const intervalo$ = new Observable(subs => {
+    // crear un contador
+    let number = 0
+    setInterval(() => {
+        subs.next(number)
+        number += 1;
+    }, 1000)
+})
 
-    //Forzar un error
-    //const a = undefined
-    //a.nombre = 'Raul'
-    // cuando se emite el complete, el 
-    // observable ya no emite notificacion
-    subs.complete();
-
-    subs.next('Este mensaje ya no se notificará')
-});
-
-obs$.subscribe(observer)
-
-/* obs$.subscribe(
-    valor => console.log('next: ', valor),
-    error => console.warn('error: ', error),
-    () => console.info('Completado')
-); */
+intervalo$.subscribe(console.log)
