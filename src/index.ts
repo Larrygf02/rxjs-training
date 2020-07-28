@@ -1,4 +1,5 @@
-import { Observable, Observer, Subscriber } from 'rxjs';
+// subscribirse con el mismo valor usando subject
+import { Observable, Observer, Subscriber, Subject } from 'rxjs';
 
 const observer: Observer<any> = {
     next: value => console.log('[next]: ', value),
@@ -6,32 +7,16 @@ const observer: Observer<any> = {
     complete: () => console.info('[Completado]')
 }
 
-const intervalo$ = new Observable<number>(subs => {
-    // crear un contador
-    let number = 0
-    const interval = setInterval(() => {
-        subs.next(number)
-        number += 1;
-    }, 1000)
-
-    setTimeout(() => {
-        subs.complete()
-    }, 2500)
-
-    return () => {
-        clearInterval(interval)
-        console.log('Intervalo destruido')
-    }
+const intervalo$ = new Observable<number>( subs => {
+    const interval = setInterval(() => subs.next(Math.random()), 5000);
+    return () => clearInterval(interval);
 })
 
-const subs1 = intervalo$.subscribe(observer)
-const subs2 = intervalo$.subscribe(observer)
-const subs3 = intervalo$.subscribe(observer)
+// subject es un tipo especial de observable
+const subject$ = new Subject()
+intervalo$.subscribe(subject$)
+//const subs1 = intervalo$.subscribe(rnd => console.log('subs1: ', rnd))
+//const subs2 = intervalo$.subscribe(rnd => console.log('subs2: ', rnd))
 
-subs1.add(subs2)
-     .add(subs3)
-
-setTimeout(() => {
-    subs1.unsubscribe()
-    console.log('Completado timeout')
-}, 3000)
+const subs1 = subject$.subscribe(rnd => console.log('subs1: ', rnd))
+const subs2 = subject$.subscribe(rnd => console.log('subs2: ', rnd))
