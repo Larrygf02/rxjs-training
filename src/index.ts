@@ -1,29 +1,17 @@
-import { of, from } from 'rxjs';
+// operadores
+// controla el flujo de informacion 
+// que llega en una subscripcion
+import { range, fromEvent } from 'rxjs';
+import { map } from 'rxjs/operators'
 
-const observer = {
-    next: val => console.log('next: ', val),
-    complete: () => console.log('complete')
-}
+/* range(1,5).pipe(
+    map<number, number>(val => val * 10)
+)
+.subscribe(console.log) */
 
-// const source$ = of([1,2,3,4])
+const keyup$ = fromEvent<KeyboardEvent>(document, 'keyup');
 
-// get data of fetch with subscription
-/* const source$ = from(fetch('https://api.github.com/users/klerith'))
-
-source$.subscribe(async resp => {
-    console.log(resp.ok)
-    const dataResp = await resp.json();
-    console.log(dataResp)
-}) */
-
-
-const miGenerador = function*() {
-    yield 1;
-    yield 2;
-    yield 3;
-    yield 4;
-    yield 5;
-}
-
-const miIterable = miGenerador();
-from(miIterable).subscribe(observer)
+keyup$.pipe(
+    map<any,any>(val => val.key)
+).subscribe(console.log)
+//keyup$.subscribe(val => console.log('map', val))
