@@ -1,20 +1,29 @@
-import { asyncScheduler } from 'rxjs'
+import { of, from } from 'rxjs';
 
-// setTimeout (() => {}, 3000)
-// setInterval (() => {}, 3000)
+const observer = {
+    next: val => console.log('next: ', val),
+    complete: () => console.log('complete')
+}
 
-const saludar = () => console.log('Hola mundo')
-const saludar2 = nombre => console.log(`Hola ${nombre}`)
+// const source$ = of([1,2,3,4])
 
-// ejecuta el saludar despues de 2 segundos
-//asyncScheduler.schedule(saludar, 2000)
-//asyncScheduler.schedule(saludar2, 2000, 'Raulin')
+// get data of fetch with subscription
+/* const source$ = from(fetch('https://api.github.com/users/klerith'))
 
-const subs = asyncScheduler.schedule(function (state) {
-    console.log('state', state)
-    this.schedule(state + 1, 1000)
-}, 2000, 0)
+source$.subscribe(async resp => {
+    console.log(resp.ok)
+    const dataResp = await resp.json();
+    console.log(dataResp)
+}) */
 
-setTimeout(() => {
-    subs.unsubscribe();
-}, 6000)
+
+const miGenerador = function*() {
+    yield 1;
+    yield 2;
+    yield 3;
+    yield 4;
+    yield 5;
+}
+
+const miIterable = miGenerador();
+from(miIterable).subscribe(observer)
