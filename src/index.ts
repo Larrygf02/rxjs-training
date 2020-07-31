@@ -1,4 +1,5 @@
 import { fromEvent } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 const texto = document.createElement('div')
 texto.innerHTML = `
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta dignissim nulla, a commodo tellus cursus non. Maecenas auctor dictum dui quis dictum. Praesent hendrerit placerat felis, at placerat ipsum iaculis id. Suspendisse hendrerit neque eu nunc gravida, et varius nisi sollicitudin. Quisque quis fringilla augue. In hac habitasse platea dictumst. Morbi a sapien in diam mattis mattis in at ipsum. Nunc pulvinar eros a hendrerit blandit. Nulla facilisi.
@@ -21,11 +22,22 @@ progressBar.setAttribute('class', 'progress-bar')
 body.append(progressBar)
 
 // funcion que haga el calculo
+const calcularPorcentajeScroll = (event) => {
+    const {
+        scrollTop,
+        scrollHeight,
+        clientHeight
+    } = event.target.documentElement;
 
+    return (scrollTop / (scrollHeight - clientHeight) ) * 100
+}
 // Streams
 const scroll$ = fromEvent(document, 'scroll');
 
-const progress$ = scroll$.pipe();
+const progress$ = scroll$.pipe(
+    map(calcularPorcentajeScroll),
+    tap(console.log)
+);
 progress$.subscribe(porcentaje => {
     progressBar.style.width = `${porcentaje}%`
 })
