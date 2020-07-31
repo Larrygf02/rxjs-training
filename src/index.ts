@@ -1,11 +1,27 @@
+import { range, of } from 'rxjs';
+import { filter } from 'rxjs/operators'
 
-import { fromEvent } from 'rxjs';
-import { mapTo } from 'rxjs/operators'
+range(1,10).pipe(
+    filter(val => val % 2 == 1)
+)//.subscribe(console.log)
 
-const keyup$ = fromEvent<KeyboardEvent>(document, 'keyup');
+const personajes = [
+    {
+        tipo: 'Heroe',
+        nombre: 'Batman'
+    },
+    {
+        tipo: 'Heroe',
+        nombre: 'Robin'
+    },
+    {
+        tipo: 'Villano',
+        nombre: 'Joker'
+    }
+]
 
-const keyupMapTo$ = keyup$.pipe(
-    mapTo('Tecla presionada')
-)
-
-keyupMapTo$.subscribe(code => console.log('mapTo', code))
+const obs$ = of(...personajes)
+let tipo = 'Villano'
+obs$.pipe(
+    filter(personaje => personaje.tipo == tipo)
+).subscribe(console.log)
