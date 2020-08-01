@@ -1,8 +1,9 @@
-import { fromEvent } from 'rxjs';
-import { map, sampleTime } from 'rxjs/operators';
+const url = 'https://api.github.com/usexs?per_page=5';
 
-const click$ = fromEvent<MouseEvent>(document, 'click')
-click$.pipe(
-    sampleTime(2000), // el resultado es el mismo si esta arriba o abajo pero hay un mejor performance arriba ya que no haria el map en cada operacion
-    map(({x, y}) => ({x,y})),
-).subscribe(console.log)
+const fetchPromesa = fetch(url);
+
+fetchPromesa
+    .then(resp => resp.json())
+    .then(console.log)
+    .catch(err => console.warn('error en usuarios', err))
+
