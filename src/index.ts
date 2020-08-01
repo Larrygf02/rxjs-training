@@ -1,31 +1,24 @@
-import { ajax, AjaxError } from 'rxjs/ajax'
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
 
-// api para hacer pruebas
-const url = 'https://httpbin.org/delay/1';
+const body = document.querySelector('body')
+const textInput = document.createElement('input')
+const orderList = document.createElement('ol')
 
-ajax.post(url,{
-    id: 1,
-    nombre: 'Grace'
-}, {
-    'mi-token': 'ABC123'
-}).subscribe(console.log)
+body.append(textInput, orderList)
 
+// Streams
+const input$ = fromEvent<KeyboardEvent>(textInput, 'keyup')
+input$.pipe(
+    debounceTime(500),
+    map(  event => {
+        const texto = event.target['value'];
+        return ajax.getJSON(
+            `https://api.github.com/users/${texto}`
+        )
+    })
+).subscribe(resp => {
+    resp.subscribe(console.log)
+})
 
-ajax({
-    url: url,
-    method: 'POST',
-    headers: {
-        'mi-token': 'ABC123'
-    },
-    body: {
-        id: 1,
-        nombre: 'Peque'
-    }
-}).subscribe(console.log)
-
-const manejaError = (resp: AjaxError) => {
-    console.warn('error', resp.message)
-    return of({})
-}
