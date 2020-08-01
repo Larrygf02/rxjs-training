@@ -1,11 +1,11 @@
-import { of } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
 
-const numeros$ = of(1,2,3,4,5);
+const click$ = fromEvent<MouseEvent>(document, 'click')
 
-numeros$.pipe(
-    tap(t => console.log('tap', t)),
-    take(3)
+click$.pipe(
+    tap(console.log),
+    first<MouseEvent>(({clientY}) => clientY >= 150 )
 ).subscribe({
     next: val => console.log('next: ', val),
     complete: () => console.log('complete: ')
