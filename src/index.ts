@@ -1,26 +1,43 @@
-import { of, interval, fromEvent } from 'rxjs';
-import { mergeMap, take, map, takeUntil } from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
+import { debounceTime, map, debounce, pluck, mergeAll, mergeMap } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
 
-const letras$ = of('a','b','c');
+const body = document.querySelector('body')
+const textInput = document.createElement('input')
+const orderList = document.createElement('ol')
 
-letras$.pipe(
-    mergeMap((letra) => interval(1000).pipe(
-        map(i => letra + i),
-        take(3)
-    ))
-)/* .subscribe({
-    next: val => console.log(val),
-    complete: () => console.log('complete')
+body.append(textInput, orderList)
+
+// Streams
+const input$ = fromEvent<KeyboardEvent>(textInput, 'keyup')
+// antes
+/* input$.pipe(
+    debounceTime(500),
+    map(  event => {
+        const texto = event.target['value'];
+        return ajax.getJSON(
+            `https://api.github.com/search/users?q=${texto}`
+        )
+    })
+).subscribe(resp => {
+    resp.subscribe(console.log)
 }) */
 
-const mousedown$ = fromEvent(document, 'mousedown');
-const mouseup$ = fromEvent(document, 'mouseup');
-const interval$ = interval()
+// despues
+input$.pipe(
+    debounceTime(500),
+    pluck('target', 'value'),
+    mergeMap(texto => ajax.getJSON(
+        `https://api.github.com/search/users?q=${texto}`
+    )),
+    pluck('items')
+)/* .subscribe(resp => {
+    console.log(resp[0].score)
+}) */
 
-mousedown$.pipe(
-    mergeMap( () => interval$.pipe(
-        takeUntil(mouseup$)
-    ))
+const url = 'https://httpbin.org/delay/1?arg=';
+input$.pipe(
+    pluck('target', 'value'),
+    mergeMap(texto => ajax.getJSON(url+texto))
 ).subscribe(console.log)
-
 
