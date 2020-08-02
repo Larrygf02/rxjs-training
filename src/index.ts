@@ -1,38 +1,26 @@
-import { fromEvent } from 'rxjs';
-import { debounceTime, map, debounce, pluck, mergeAll } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
+import { of, interval, fromEvent } from 'rxjs';
+import { mergeMap, take, map, takeUntil } from 'rxjs/operators';
 
-const body = document.querySelector('body')
-const textInput = document.createElement('input')
-const orderList = document.createElement('ol')
+const letras$ = of('a','b','c');
 
-body.append(textInput, orderList)
-
-// Streams
-const input$ = fromEvent<KeyboardEvent>(textInput, 'keyup')
-// antes
-/* input$.pipe(
-    debounceTime(500),
-    map(  event => {
-        const texto = event.target['value'];
-        return ajax.getJSON(
-            `https://api.github.com/search/users?q=${texto}`
-        )
-    })
-).subscribe(resp => {
-    resp.subscribe(console.log)
+letras$.pipe(
+    mergeMap((letra) => interval(1000).pipe(
+        map(i => letra + i),
+        take(3)
+    ))
+)/* .subscribe({
+    next: val => console.log(val),
+    complete: () => console.log('complete')
 }) */
 
-// despues
-input$.pipe(
-    debounceTime(500),
-    pluck('target', 'value'),
-    map(texto => ajax.getJSON(
-        `https://api.github.com/search/users?q=${texto}`
-    )),
-    mergeAll(),
-    pluck('items')
-).subscribe(resp => {
-    console.log(resp)
-})
+const mousedown$ = fromEvent(document, 'mousedown');
+const mouseup$ = fromEvent(document, 'mouseup');
+const interval$ = interval()
+
+mousedown$.pipe(
+    mergeMap( () => interval$.pipe(
+        takeUntil(mouseup$)
+    ))
+).subscribe(console.log)
+
 
